@@ -121,9 +121,10 @@
                 </div>
             </div>
 
-            <div class="form-group" hidden>
-                <label for="latlong" hidden>Latitude & Longitude:</label>
-                <input type="text" id="latlong" name="latlong" readonly hidden>
+            <!-- Menggunakan style="display: none;" sebagai alternatif untuk hidden -->
+            <div class="form-group" style="display: none;">
+                <label for="latlong">Latitude & Longitude:</label>
+                <input type="text" id="latlong" name="latlong" readonly>
             </div>
 
             <input type="submit" value="Kirim">
@@ -152,7 +153,7 @@
 
             var currentDateTime = new Date();
 
-            // Format tanggal dd:mm:yyyy
+            // Format tanggal dd/mm/yyyy untuk kompatibilitas dengan Safari
             var date = ("0" + currentDateTime.getDate()).slice(-2) + "/" + ("0" + (currentDateTime.getMonth() + 1)).slice(-2) + "/" + currentDateTime.getFullYear();
             document.getElementById("date").textContent = date;
 
