@@ -66,11 +66,29 @@
         #image-preview {
             margin-top: 10px;
             text-align: center;
+            position: relative;
         }
 
         #image-preview img {
             max-width: 100%;
             height: auto;
+            display: block;
+        }
+
+        .watermark {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: black;
+        }
+
+        .hidden-preview {
+            display: none;
         }
     </style>
 </head>
@@ -95,16 +113,17 @@
             <div class="form-group">
                 <label for="gambar">Upload Gambar:</label>
                 <input type="file" id="gambar" name="gambar" accept="image/*" required capture onchange="previewImage()">
-                <div id="image-preview">
-                    <img id="preview" src="#" alt="Preview" style="display:none;">
+                <div id="image-preview" class="hidden-preview">
+                    <img id="preview" src="#" alt="Preview">
+                    <div id="watermark" class="watermark">
+                        Latitude: <span id="latitude"></span>, Longitude: <span id="longitude"></span><br>Tanggal: <span id="date"></span>, Jam: <span id="time"></span>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="latlong">Latitude & Longitude:</label>
-                <input type="text" id="latlong" name="latlong" readonly>
-                <!-- <button type="button" onclick="getLocation()">Ambil Lokasi</button> -->
-                <!-- <p id="location-error">Geolocation tidak didukung atau izin ditolak.</p> -->
+            <div class="form-group" hidden>
+                <label for="latlong" hidden>Latitude & Longitude:</label>
+                <input type="text" id="latlong" name="latlong" readonly hidden>
             </div>
 
             <input type="submit" value="Kirim">
@@ -127,6 +146,19 @@
         function showPosition(position) {
             var latlongInput = document.getElementById("latlong");
             latlongInput.value = position.coords.latitude + ", " + position.coords.longitude;
+
+            document.getElementById("latitude").textContent = position.coords.latitude.toFixed(6);
+            document.getElementById("longitude").textContent = position.coords.longitude.toFixed(6);
+
+            var currentDateTime = new Date();
+
+            // Format tanggal dd:mm:yyyy
+            var date = ("0" + currentDateTime.getDate()).slice(-2) + "/" + ("0" + (currentDateTime.getMonth() + 1)).slice(-2) + "/" + currentDateTime.getFullYear();
+            document.getElementById("date").textContent = date;
+
+            // Format waktu 24 jam
+            var time = ("0" + currentDateTime.getHours()).slice(-2) + ":" + ("0" + currentDateTime.getMinutes()).slice(-2);
+            document.getElementById("time").textContent = time;
         }
 
         function showError(error) {
@@ -155,14 +187,16 @@
 
             reader.onloadend = function() {
                 preview.src = reader.result;
-                preview.style.display = "block"; // Show image preview container
+                document.getElementById('watermark').style.display = 'block';
             }
 
             if (file) {
-                reader.readAsDataURL(file); // Converts to base64 string
+                reader.readAsDataURL(file);
+                document.getElementById('image-preview').classList.remove('hidden-preview');
             } else {
                 preview.src = "";
-                preview.style.display = "none";
+                document.getElementById('watermark').style.display = 'none';
+                document.getElementById('image-preview').classList.add('hidden-preview');
             }
         }
     </script>
